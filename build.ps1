@@ -15,7 +15,7 @@ Foreach ($platform in $platforms) {
         go build -o $server server/main.go
         if (Test-Path $client -PathType Leaf) {
             $compress = @{
-                LiteralPath = $client, $server
+                LiteralPath = $client, $server, "library-licenses.txt"
                 CompressionLevel = "Fastest"
                 DestinationPath = "out/twirpydns-$platform-$arch.zip"
             }
