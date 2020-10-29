@@ -1,0 +1,8 @@
+# for private installations; set the same for server and client
+secret = 
+
+# IP:port for upstream request
+upstream = 
+
+# IP:port for twirp server
+listen_address = :8080

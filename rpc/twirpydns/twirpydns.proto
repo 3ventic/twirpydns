@@ -1,0 +1,16 @@
+syntax = "proto3";
+package twirpydns.dns;
+option go_package = "rpc/twirpydns";
+
+service TwirpyDNS {
+    rpc DNS(DNSRequest) returns (DNSResponse);
+}
+
+message DNSRequest {
+    bytes msg = 1;
+    string secret = 2;
+}
+
+message DNSResponse {
+    bytes msg = 1;
+}

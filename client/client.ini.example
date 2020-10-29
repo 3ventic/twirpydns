@@ -1,0 +1,5 @@
+# for private installations; set the same for server and client
+secret = 
+
+# the base http(s) address for the corresponding server
+server_address = http://localhost:8080
