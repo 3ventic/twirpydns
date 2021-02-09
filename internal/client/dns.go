@@ -3,14 +3,18 @@ package client
 import (
 	"context"
 	"log"
+	"time"
 
 	"github.com/3ventic/twirpydns/rpc/twirpydns"
+	"github.com/cenkalti/backoff/v4"
 	"github.com/miekg/dns"
 )
 
 type Server struct {
-	Client twirpydns.TwirpyDNS
-	Secret string
+	Client          twirpydns.TwirpyDNS
+	Secret          string
+	FallbackAddress string
+	Timeout         time.Duration
 }
 
 var fallbackClient = &dns.Client{}
@@ -23,16 +27,24 @@ func (s *Server) ServeDNS(w dns.ResponseWriter, r *dns.Msg) {
 		return
 	}
 
-	res, err := s.Client.DNS(context.Background(), &twirpydns.DNSRequest{
-		Msg:    m,
-		Secret: s.Secret,
-	})
+	ctx, cancel := context.WithTimeout(context.Background(), s.Timeout)
+	defer cancel()
+
+	retryer := backoff.WithContext(backoff.NewConstantBackOff(100*time.Millisecond), ctx)
+	var res *twirpydns.DNSResponse
+	err = backoff.Retry(func() error {
+		res, err = s.Client.DNS(ctx, &twirpydns.DNSRequest{
+			Msg:    m,
+			Secret: s.Secret,
+		})
+		return err
+	}, retryer)
 	if err != nil {
 		log.Printf("requesting: %v", err)
 
 		// fallback
 		var in *dns.Msg
-		in, _, err = fallbackClient.Exchange(r, "1.1.1.1:53")
+		in, _, err = fallbackClient.Exchange(r, s.FallbackAddress)
 		if err != nil {
 			log.Printf("requesting fallback: %v", err)
 			return

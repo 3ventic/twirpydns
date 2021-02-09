@@ -3,3 +3,14 @@ secret =
 
 # the base http(s) address for the corresponding server
 server_address = http://localhost:8080
+
+# timeout before using fallback, this + fallback_timeout should be less than OS resolver's timeout (2 seconds in Windows)
+# format according to https://golang.org/pkg/time/#ParseDuration
+timeout = 10s
+
+[fallback]
+# regular DNS resolver to use as fallback, format ip:port
+address = 1.1.1.1:53
+
+# timeout for fallback query
+fallback_timeout = 10s

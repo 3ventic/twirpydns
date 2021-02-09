@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/3ventic/twirpydns/internal/client"
 	"github.com/3ventic/twirpydns/rpc/twirpydns"
@@ -19,8 +20,10 @@ func main() {
 	twirpydnsClient := twirpydns.NewTwirpyDNSProtobufClient(cfg.Section("").Key("server_address").String(), &http.Client{})
 
 	s := &client.Server{
-		Client: twirpydnsClient,
-		Secret: cfg.Section("").Key("secret").String(),
+		Client:          twirpydnsClient,
+		Secret:          cfg.Section("").Key("secret").String(),
+		FallbackAddress: cfg.Section("").Key("fallback_dns").MustString("1.1.1.1:53"),
+		Timeout:         cfg.Section("").Key("timeout").MustDuration(10 * time.Second),
 	}
 
 	err = dns.ListenAndServe("127.0.0.1:53", "udp", s)
