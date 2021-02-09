@@ -7,6 +7,7 @@ import (
 
 	"github.com/3ventic/twirpydns/internal/client"
 	"github.com/3ventic/twirpydns/rpc/twirpydns"
+	"github.com/3ventic/twirpydns/workers"
 	"github.com/go-ini/ini"
 	"github.com/miekg/dns"
 )
@@ -24,6 +25,7 @@ func main() {
 		Secret:          cfg.Section("").Key("secret").String(),
 		FallbackAddress: cfg.Section("").Key("fallback_dns").MustString("1.1.1.1:53"),
 		Timeout:         cfg.Section("").Key("timeout").MustDuration(10 * time.Second),
+		Worker:          workers.New(),
 	}
 
 	err = dns.ListenAndServe("127.0.0.1:53", "udp", s)
