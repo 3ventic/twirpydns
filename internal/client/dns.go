@@ -16,7 +16,9 @@ import (
 type Server struct {
 	Client          twirpydns.TwirpyDNS
 	Secret          string
+	FallbackEnabled bool
 	FallbackAddress string
+	FallbackTimeout time.Duration
 	Timeout         time.Duration
 	Worker          workers.Worker
 }
@@ -57,13 +59,20 @@ func (s *Server) ServeDNS(w dns.ResponseWriter, r *dns.Msg) {
 			return err
 		}, retryer)
 		if err != nil {
-			log.Printf("requesting: %v", err)
-			err = nil
+			if !s.FallbackEnabled {
+				err = errors.Wrap(err, "requesting")
+			} else {
+				log.Printf("requesting: %v", err)
+				err = nil
 
-			// fallback
-			in, _, err = fallbackClient.Exchange(r, s.FallbackAddress)
-			if err != nil {
-				err = errors.Wrap(err, "requesting fallback")
+				fbCtx, cancel := context.WithTimeout(context.Background(), s.FallbackTimeout)
+				defer cancel()
+
+				// fallback
+				in, _, err = fallbackClient.ExchangeContext(fbCtx, r, s.FallbackAddress)
+				if err != nil {
+					err = errors.Wrap(err, "requesting fallback")
+				}
 			}
 		}
 		return &results{

@@ -9,6 +9,8 @@ server_address = http://localhost:8080
 timeout = 10s
 
 [fallback]
+enabled = true
+
 # regular DNS resolver to use as fallback, format ip:port
 address = 1.1.1.1:53
 

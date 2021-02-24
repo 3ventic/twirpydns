@@ -23,8 +23,10 @@ func main() {
 	s := &client.Server{
 		Client:          twirpydnsClient,
 		Secret:          cfg.Section("").Key("secret").String(),
-		FallbackAddress: cfg.Section("").Key("fallback_dns").MustString("1.1.1.1:53"),
 		Timeout:         cfg.Section("").Key("timeout").MustDuration(10 * time.Second),
+		FallbackEnabled: cfg.Section("fallback").Key("enabled").MustBool(true),
+		FallbackAddress: cfg.Section("fallback").Key("address").MustString("1.1.1.1:53"),
+		FallbackTimeout: cfg.Section("fallback").Key("timeout").MustDuration(10 * time.Second),
 		Worker:          workers.New(),
 	}
 
