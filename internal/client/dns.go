@@ -65,8 +65,8 @@ func (s *Server) ServeDNS(w dns.ResponseWriter, r *dns.Msg) {
 				log.Printf("requesting: %v", err)
 				err = nil
 
-				fbCtx, cancel := context.WithTimeout(context.Background(), s.FallbackTimeout)
-				defer cancel()
+				fbCtx, cancelFallback := context.WithTimeout(context.Background(), s.FallbackTimeout)
+				defer cancelFallback()
 
 				// fallback
 				in, _, err = fallbackClient.ExchangeContext(fbCtx, r, s.FallbackAddress)
