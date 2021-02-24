@@ -10,7 +10,7 @@ import (
 	"github.com/twitchtv/twirp"
 )
 
-// Server implements the twirpydns twirp-DNS server
+// Server implements the twirpydns twirp-DNS server.
 type Server struct {
 	Secret  string
 	Client  *dns.Client
@@ -23,6 +23,7 @@ func (s Server) DNS(ctx context.Context, req *twirpydns.DNSRequest) (*twirpydns.
 	}
 
 	r := new(dns.Msg)
+
 	err := r.Unpack(req.Msg)
 	if err != nil {
 		return nil, twirp.InvalidArgumentError("msg", "unable to unpack msg. Is it a valid DNS query?")
@@ -36,6 +37,7 @@ func (s Server) DNS(ctx context.Context, req *twirpydns.DNSRequest) (*twirpydns.
 	if err != nil {
 		return nil, twirp.InternalErrorWith(err)
 	}
+
 	if rtt > time.Second {
 		log.Printf("query took %v: %v", rtt, r.Question[0].String())
 	}

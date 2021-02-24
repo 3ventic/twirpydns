@@ -12,6 +12,10 @@ import (
 	"github.com/miekg/dns"
 )
 
+const (
+	defaultTimeout = 2 * time.Second
+)
+
 func main() {
 	cfg, err := ini.Load("client.ini")
 	if err != nil {
@@ -23,10 +27,10 @@ func main() {
 	s := &client.Server{
 		Client:          twirpydnsClient,
 		Secret:          cfg.Section("").Key("secret").String(),
-		Timeout:         cfg.Section("").Key("timeout").MustDuration(10 * time.Second),
+		Timeout:         cfg.Section("").Key("timeout").MustDuration(defaultTimeout),
 		FallbackEnabled: cfg.Section("fallback").Key("enabled").MustBool(true),
 		FallbackAddress: cfg.Section("fallback").Key("address").MustString("1.1.1.1:53"),
-		FallbackTimeout: cfg.Section("fallback").Key("timeout").MustDuration(10 * time.Second),
+		FallbackTimeout: cfg.Section("fallback").Key("timeout").MustDuration(defaultTimeout),
 		Worker:          workers.New(),
 	}
 
