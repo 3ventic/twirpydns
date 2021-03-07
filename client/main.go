@@ -34,6 +34,13 @@ func main() {
 		Worker:          workers.New(),
 	}
 
+	go func() {
+		err = dns.ListenAndServe("[::1]:53", "udp", s)
+		if err != nil {
+			log.Printf("inet6 listen failed: %s", err)
+		}
+	}()
+
 	err = dns.ListenAndServe("127.0.0.1:53", "udp", s)
 	if err != nil {
 		log.Fatal(err)
