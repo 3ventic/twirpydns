@@ -1,5 +1,5 @@
 $platforms = 'darwin', 'dragonfly', 'freebsd', 'illumos', 'linux', 'netbsd', 'openbsd', 'plan9', 'windows'
-$archs = '386', 'amd64', 'arm'
+$archs = 'amd64', 'arm'
 
 Foreach ($platform in $platforms) {
     $Env:GOOS="$platform"
